@@ -1,3 +1,5 @@
+const Table = require('cli-table');
+
 const random = function(length = 1) {
   return Math.random() * length;
 };
@@ -13,6 +15,18 @@ const generateSquareBoard = function(length, filler = " ") {
 
 const generateRandomNumber = function(random, min, max) {
   return Math.floor(random(max - min)) + min;
+};
+
+const checkBlock = function(board, row, col, checker) {
+  const array = [];
+  const rowIndex = Math.floor(row/3);
+  const colIndex = Math.floor(col/3);
+  for (let row = rowIndex * 3; row < rowIndex * 3 + 3; row++) {
+    for (let col = colIndex * 3; col < colIndex * 3 + 3; col++) {
+      array.push(board[row][col])
+    }
+  }
+  return !array.includes(checker)
 };
 
 const isIncludes = function(set, elem) {
@@ -42,7 +56,8 @@ const checkRow = function(board, row, checker) {
 const checkValid = function(board, row, column, checker) {
   const isNotInRow = checkRow(board, row, checker);
   const isNotInCol = checkColumn(board, column, checker);
-  return isNotInCol && isNotInRow;
+  const isNotInBlock = checkBlock(board,row,column,checker)
+  return isNotInCol && isNotInRow && isNotInBlock;
 };
 
 const placeCells = function(random, board, places) {
@@ -72,12 +87,19 @@ const generateRandomPlaces = function(random, rows, cols, noOfPlaces) {
   return result;
 };
 
+const generateTable = function(board){
+  const table = new Table();
+  board.forEach(x => table.push(x));
+  return table;
+}
+
 const main = function() {
   const board = generateSquareBoard(9, "");
   const noOfPlaces = generateRandomNumber(random, 18, 25);
   const places = generateRandomPlaces(random, 9, 9, noOfPlaces);
-  const finalBoard = placeCells(random,board,places);
-  return finalBoard;
+  const finalBoard = placeCells(random, board, places);
+  const printBoard = generateTable(finalBoard).toString();
+  return printBoard;
 };
 
 console.log(main());
